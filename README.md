@@ -41,3 +41,30 @@ For instance, the `daily_rollups.sql` should be scheduled to run 15 minutes afte
 every day, to rollup the final copy of the previous day's data.
 
 Other incremental rollups throughout the day are TBD.
+
+## Querying
+
+We're using [ReplacingMergeTree](https://clickhouse.com/docs/en/engines/table-engines/mergetree-family/replacingmergetree)
+tables, since we expect to "upsert" the same days/hours of data multiple times.
+
+This does mean you could get inaccurate results. Couple strategies to deal with that:
+
+```sql
+# plain query returns 2.99M ... woh, that's more than expected!
+SELECT SUM(count) FROM hourly_downloads WHERE hour >= '2024-04-01' AND hour < '2024-04-02'
+
+# FINAL query returns 1.49M ... that's correct, but this was slower
+SELECT SUM(MAX(count)) FROM hourly_downloads FINAL WHERE hour >= '2024-04-01' AND hour < '2024-04-02'
+
+# 3x faster that FINAL
+SELECT SUM(max_count) FROM (
+  SELECT hour, MAX(count) AS max_count FROM hourly_downloads
+  GROUP BY podcast_id, feed_slug, episode_id, hour
+)
+WHERE hour >= '2024-04-01' AND hour < '2024-04-02'
+
+# or ... cleanup?
+OPTIMIZE TABLE hourly_downloads FINAL
+
+# or a MV populated from the inserts-table?
+```
