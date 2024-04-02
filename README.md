@@ -29,3 +29,15 @@ in order to pull down the GS files. But who doesn't have one of those lying arou
 ./castlehouse client
 # :) SELECT COUNT(*) FROM hourly_downloads FINAL
 ```
+
+## Rollups
+
+This repo also includes a `rollups/` directory.
+
+These SQL files are not intended to run from here, but instead should be setup as a
+BigQuery Scheduled Query.
+
+For instance, the `daily_rollups.sql` should be scheduled to run 15 minutes after midnight UTC
+every day, to rollup the final copy of the previous day's data.
+
+Other incremental rollups throughout the day are TBD.
