@@ -58,3 +58,6 @@ build-iPhoneSimulator/
 # Clickhouse dev server
 clickhouse
 
+# mac stuffs
+.DS_Store
+

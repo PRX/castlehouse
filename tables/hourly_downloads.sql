@@ -1,8 +1,8 @@
 CREATE TABLE hourly_downloads (
-  `podcast_id` UInt64,
+  `podcast_id` UInt32,
   `feed_slug` String,
   `episode_id` String,
-  `hour` DateTime64,
+  `hour` DateTime,
   `count` UInt64
 )
 ENGINE = ReplacingMergeTree

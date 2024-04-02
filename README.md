@@ -29,4 +29,3 @@ in order to pull down the GS files. But who doesn't have one of those lying arou
 ./castlehouse client
 # :) SELECT COUNT(*) FROM hourly_downloads FINAL
 ```
-
