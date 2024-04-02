@@ -1,0 +1,57 @@
+<clickhouse>
+    <logger>
+        <level>trace</level>
+        <console>true</console>
+    </logger>
+
+    <http_port>8123</http_port>
+    <tcp_port>9000</tcp_port>
+    <mysql_port>9004</mysql_port>
+
+    <path>./</path>
+
+    <mlock_executable>true</mlock_executable>
+
+    <users>
+        <default>
+            <password/>
+
+            <networks>
+                <ip>::/0</ip>
+            </networks>
+
+            <profile>default</profile>
+            <quota>default</quota>
+
+            <access_management>1</access_management>
+            <named_collection_control>1</named_collection_control>
+        </default>
+    </users>
+
+    <profiles>
+        <default/>
+    </profiles>
+
+    <quotas>
+        <default/>
+    </quotas>
+
+    <!-- custom stuff... everything above this line was copied from defaults -->
+    <!-- TODO: is there a better way to extend config locally? -->
+    <timezone>UTC</timezone>
+
+    <url_scheme_mappers>
+        <gs>
+            <from>gs://{bucket}/</from>
+            <to>https://storage.googleapis.com/{bucket}</to>
+        </gs>
+    </url_scheme_mappers>
+
+    <s3>
+        <gs_endpoint>
+            <endpoint>https://storage.googleapis.com</endpoint>
+            <access_key_id from_env="GOOGLE_STORAGE_HMAC_KEY_ID"></access_key_id>
+            <secret_access_key from_env="GOOGLE_STORAGE_HMAC_KEY_SECRET"></secret_access_key>
+        </gs_endpoint>
+    </s3>
+</clickhouse>
