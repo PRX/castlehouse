@@ -7,7 +7,6 @@ EXE_FILE = "#{WDIR}/clickhouse/clickhouse"
 PID_FILE = "#{WDIR}/clickhouse/server.pid"
 LOG_FILE = "#{WDIR}/clickhouse/server.log"
 ELOG_FILE = "#{WDIR}/clickhouse/server-error.log"
-TABLES_DIR = "#{WDIR}/tables"
 
 gemfile do
   source "https://rubygems.org"
@@ -30,12 +29,14 @@ def usage
   puts "  castlehouse start".cyan + " - start clickhouse server in foreground"
   puts "  castlehouse daemon".cyan + " - start clickhouse server in background"
   puts "  castlehouse stop".cyan + " - stop clickhouse server"
-  puts "  castlehouse load".cyan + " - setup rollup tables"
+  puts "  castlehouse setup".cyan + " - create rollup tables"
+  puts "  castlehouse reset".cyan + " - drop and recreate rollup tables"
+  puts "  castlehouse client".cyan + " - start clickhouse client"
+  puts ""
   puts "  castlehouse load latest".cyan + " - load some rollup data"
   puts "  castlehouse load 2024/03/28".cyan + " - load day of rollup data"
   puts "  castlehouse load 2024/03/*".cyan + " - load month of rollup data"
   puts "  castlehouse load 2024/**".cyan + " - load year of rollup data"
-  puts "  castlehouse client".cyan + " - start clickhouse client"
   puts ""
   exit 1
 end
@@ -54,6 +55,13 @@ def check_pid
     File.delete(PID_FILE)
     false
   end
+end
+
+# read tables directory
+def tables
+  Dir.glob("#{WDIR}/tables/*.sql").map do |filename|
+    [File.basename(filename, File.extname(filename)), filename]
+  end.to_h
 end
 
 # clickhouse client querying
@@ -128,23 +136,20 @@ def stop
   end
 end
 
-# create tables
-def setup
+def create_db
   abort "server not running".red unless check_pid
   abort "CLICKHOUSE_DB env not set".red if CLICKHOUSE_DB.empty?
   abort "GOOGLE_STORAGE_BUCKET env not set".red if GOOGLE_STORAGE_BUCKET.empty?
   abort "GOOGLE_STORAGE_HMAC_KEY_ID env not set".red if GOOGLE_STORAGE_HMAC_KEY_ID.empty?
   abort "GOOGLE_STORAGE_HMAC_KEY_SECRET env not set".red if GOOGLE_STORAGE_HMAC_KEY_SECRET.empty?
-
   run_query("CREATE DATABASE IF NOT EXISTS #{CLICKHOUSE_DB}")
+end
 
-  Dir.glob("#{TABLES_DIR}/*.sql") do |filename|
-    table_name = File.basename(filename, File.extname(filename))
-
-    if run_query("SHOW TABLES LIKE '#{table_name}'").empty?
+def create_tables
+  tables.each do |table, filename|
+    if run_query("SHOW TABLES LIKE '#{table}'").empty?
       print "creating " + File.basename(filename).underline + "... "
       output = run_query(filename)
-
       if $?.success?
         puts "ok!".green
       else
@@ -154,20 +159,9 @@ def setup
   end
 end
 
-# load tables matching a google cloud storage glob
-def load(glob)
-  Dir.glob("#{TABLES_DIR}/*.sql") do |filename|
-    table_name = File.basename(filename, File.extname(filename))
-    gs_uri = "gs://#{GOOGLE_STORAGE_BUCKET}/#{glob}/#{table_name}_*.parquet"
-
-    print "loading " + gs_uri.underline + "... "
-    output = run_query("INSERT INTO #{table_name} SELECT * FROM s3('#{gs_uri}')")
-
-    if $?.success?
-      puts "ok!".green
-    else
-      abort "ERROR".red + "\n\n#{output}"
-    end
+def drop_tables
+  run_query("SHOW TABLES").lines.map(&:chomp).each do |table|
+    run_query("DROP TABLE #{table}")
   end
 end
 
@@ -180,6 +174,22 @@ def client
   end
 end
 
+# load data matching a google cloud storage glob
+def load(glob)
+  tables.keys.each do |table|
+    gs_uri = "gs://#{GOOGLE_STORAGE_BUCKET}/#{glob}/#{table}_*.parquet"
+
+    print "loading " + gs_uri.underline + "... "
+    output = run_query("INSERT INTO #{table} SELECT * FROM s3('#{gs_uri}')")
+
+    if $?.success?
+      puts "ok!".green
+    else
+      abort "ERROR".red + "\n\n#{output}"
+    end
+  end
+end
+
 # entrypoint
 case ARGV[0]
 when "start"
@@ -188,23 +198,27 @@ when "daemon"
   start(true)
 when "stop"
   stop
+when "setup"
+  create_db
+  create_tables
+when "reset"
+  create_db
+  drop_tables
+  create_tables
+when "client"
+  client
 when "load"
-  if ARGV.count == 1
-    setup
-  elsif ARGV.count == 2 && ARGV[1] == "latest"
-    setup
+  create_db
+  create_tables
+  if ARGV.count == 2 && ARGV[1] == "latest"
     ((Time.now.utc.to_date - 29)..Time.now.utc.to_date).each do |day|
       load(day.strftime("%Y/%m/%d"))
     end
   elsif ARGV.count == 2 && ARGV[1].match?(/\A20[0-9\/\*]+\z/)
-    setup
     load(ARGV[1])
   else
-    puts "invalid date glob " + ARGV.join(" ").red + "\n"
     usage
   end
-when "client"
-  client
 else
   usage
 end

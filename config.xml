@@ -1,6 +1,6 @@
 <clickhouse>
     <logger>
-        <level>trace</level>
+        <level>debug</level>
         <console>true</console>
     </logger>
 
@@ -28,10 +28,6 @@
         </default>
     </users>
 
-    <profiles>
-        <default/>
-    </profiles>
-
     <quotas>
         <default/>
     </quotas>
@@ -54,4 +50,35 @@
             <secret_access_key from_env="GOOGLE_STORAGE_HMAC_KEY_SECRET"></secret_access_key>
         </gs_endpoint>
     </s3>
+
+    <s3queue_log>
+        <database>system</database>
+        <table>s3queue_log</table>
+    </s3queue_log>
+
+    <profiles>
+        <default>
+            <min_insert_block_size_rows_for_materialized_views>100</min_insert_block_size_rows_for_materialized_views>
+            <min_insert_block_size_bytes_for_materialized_views>200</min_insert_block_size_bytes_for_materialized_views>
+        </default>
+    </profiles>
+
+    <keeper_server>
+        <tcp_port>2181</tcp_port>
+        <server_id>1</server_id>
+        <log_storage_path>keeper/coordination/log</log_storage_path>
+        <snapshot_storage_path>keeper/coordination/snapshots</snapshot_storage_path>
+        <coordination_settings>
+            <operation_timeout_ms>10000</operation_timeout_ms>
+            <session_timeout_ms>30000</session_timeout_ms>
+            <raft_logs_level>warning</raft_logs_level>
+        </coordination_settings>
+        <raft_configuration>
+            <server>
+                <id>1</id>
+                <hostname>127.0.0.1</hostname>
+                <port>9444</port>
+            </server>
+        </raft_configuration>
+    </keeper_server>
 </clickhouse>
