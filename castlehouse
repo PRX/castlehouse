@@ -38,6 +38,9 @@ def usage
   puts "  castlehouse load 2024/03/*".cyan + " - load month of rollup data"
   puts "  castlehouse load 2024/**".cyan + " - load year of rollup data"
   puts ""
+  puts "  castlehouse queue backfill".cyan + " - use a materialized view to backfill all data"
+  puts "  castlehouse queue increments".cyan + " - use a materialized view to increment"
+  puts ""
   exit 1
 end
 
@@ -190,6 +193,21 @@ def load(glob)
   end
 end
 
+def create_materialized_view(name)
+  path = "#{WDIR}/materialized_views/#{name}.sql"
+  file = File.basename(path)
+  abort "materialized view #{file} not found".red unless File.exist?(path)
+
+  print "creating materialized views " + file.underline + "... "
+  output = run_query(path)
+
+  if $?.success?
+    puts "ok!".green
+  else
+    abort "ERROR".red + "\n\n#{output}"
+  end
+end
+
 # entrypoint
 case ARGV[0]
 when "start"
@@ -210,15 +228,19 @@ when "client"
 when "load"
   create_db
   create_tables
-  if ARGV.count == 2 && ARGV[1] == "latest"
+  if ARGV[1] == "latest"
     ((Time.now.utc.to_date - 29)..Time.now.utc.to_date).each do |day|
       load(day.strftime("%Y/%m/%d"))
     end
-  elsif ARGV.count == 2 && ARGV[1].match?(/\A20[0-9\/\*]+\z/)
+  elsif ARGV[1].match?(/\A20[0-9\/\*]+\z/)
     load(ARGV[1])
   else
     usage
   end
+when "queue"
+  create_db
+  create_tables
+  create_materialized_view(ARGV[1])
 else
   usage
 end
