@@ -1,3 +1,6 @@
+--
+-- materialized views to load intra-day increments
+--
 CREATE MATERIALIZED VIEW daily_agents_incr_mv
 TO daily_agents
 AS SELECT * FROM daily_agents_incr;

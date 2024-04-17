@@ -1,3 +1,6 @@
+--
+-- materialized view to load final daily rollups
+--
 CREATE MATERIALIZED VIEW daily_agents_queue_mv
 TO daily_agents
 AS SELECT * FROM daily_agents_queue;
