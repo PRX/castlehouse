@@ -61,7 +61,7 @@ CREATE TABLE daily_agents_queue (
 ENGINE = S3Queue('gs://the-bucket/20**/daily_agents_*.parquet')
 SETTINGS mode = 'ordered';
 
-CREATE TABLE daily_geos_incr (
+CREATE TABLE daily_geos_queue (
   podcast_id UInt32,
   episode_id String,
   country_code String,
@@ -70,7 +70,7 @@ CREATE TABLE daily_geos_incr (
   day Date,
   count UInt64
 )
-ENGINE = S3Queue('gs://the-bucket/_incr/daily_geos_*.parquet')
+ENGINE = S3Queue('gs://the-bucket/20**/daily_geos_*.parquet')
 SETTINGS mode = 'ordered';
 
 CREATE TABLE daily_uniques_queue (
@@ -109,7 +109,7 @@ CREATE TABLE daily_agents_incr (
 ENGINE = S3Queue('gs://the-bucket/_incr/daily_agents_*.parquet')
 SETTINGS mode = 'ordered';
 
-CREATE TABLE daily_geos_queue (
+CREATE TABLE daily_geos_incr (
   podcast_id UInt32,
   episode_id String,
   country_code String,
@@ -118,7 +118,7 @@ CREATE TABLE daily_geos_queue (
   day Date,
   count UInt64
 )
-ENGINE = S3Queue('gs://the-bucket/20**/daily_geos_*.parquet')
+ENGINE = S3Queue('gs://the-bucket/_incr/daily_geos_*.parquet')
 SETTINGS mode = 'ordered';
 
 CREATE TABLE daily_uniques_incr (
