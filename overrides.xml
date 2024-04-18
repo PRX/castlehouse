@@ -1,6 +1,6 @@
 <clickhouse>
     <logger>
-        <level>info</level>
+        <level>information</level>
     </logger>
 
     <timezone>UTC</timezone>
