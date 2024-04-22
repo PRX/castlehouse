@@ -1,0 +1,18 @@
+<clickhouse>
+    <profiles>
+        <default>
+            <min_insert_block_size_rows_for_materialized_views>100</min_insert_block_size_rows_for_materialized_views>
+            <min_insert_block_size_bytes_for_materialized_views>200</min_insert_block_size_bytes_for_materialized_views>
+        </default>
+    </profiles>
+
+    <users>
+        <default>
+            <networks>
+                <ip>::1</ip>
+                <ip>127.0.0.1</ip>
+            </networks>
+        </default>
+    </users>
+</clickhouse>
+

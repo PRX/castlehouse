@@ -1,4 +1,6 @@
 <clickhouse>
+    <listen_host>::</listen_host>
+
     <logger>
         <level>information</level>
     </logger>
@@ -24,26 +26,6 @@
         <database>system</database>
         <table>s3queue_log</table>
     </s3queue_log>
-
-    <profiles>
-        <default>
-            <min_insert_block_size_rows_for_materialized_views>100</min_insert_block_size_rows_for_materialized_views>
-            <min_insert_block_size_bytes_for_materialized_views>200</min_insert_block_size_bytes_for_materialized_views>
-        </default>
-        <readonly>
-            <readonly>1</readonly>
-        </readonly>
-    </profiles>
-
-    <users>
-        <readonly>
-            <password from_env="CLICKHOUSE_READONLY_PASS"/>
-            <networks>
-                <ip>::/0</ip>
-            </networks>
-            <profile>readonly</profile>
-        </readonly>
-    </users>
 
     <keeper_server>
         <tcp_port>2181</tcp_port>

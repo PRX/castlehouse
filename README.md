@@ -19,7 +19,7 @@ Except we'll put it in the `clickhouse/` subdirectory.
 mkdir clickhouse && (cd clickhouse && curl https://clickhouse.com/ | sh)
 
 # symlink our server config overrides
-mkdir clickhouse/config.d && (cd clickhouse/config.d && ln -s ../../overrides.xml .)
+mkdir clickhouse/config.d && (cd clickhouse/config.d && ln -s ../../override-config.xml .)
 ```
 
 ## Setup
@@ -45,7 +45,7 @@ realpath schema/tables.sql | xargs ./castlehouse client --queries-file
 Now you're ready to load data! For local dev, it's probably best to just insert a chunk of data
 from the bucket. Open up a `./castlehouse client` and then use Google Storage globs to grab all
 the April 2024 files. Notice that the bucket name does not matter - it is overridden from your
-`GOOGLE_STORAGE_BUCKET_ENDPOINT` env in `overrides.xml`.
+`GOOGLE_STORAGE_BUCKET_ENDPOINT` env in `override-config.xml`.
 
 ```sql
 INSERT INTO daily_agents SELECT * FROM s3('gs://the-bucket/2024/04/**/daily_agents_*.parquet');
