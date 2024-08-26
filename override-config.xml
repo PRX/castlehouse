@@ -3,6 +3,9 @@
 
     <logger>
         <level>information</level>
+        <formatting>
+            <type>json</type>
+        </formatting>
     </logger>
 
     <!-- limit the maximum number of simultaneously processed queries - choose 2*cpu_cores (default: unlimited) -->
