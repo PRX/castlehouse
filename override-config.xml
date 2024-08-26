@@ -5,6 +5,22 @@
         <level>information</level>
     </logger>
 
+    <!-- limit the maximum number of simultaneously processed queries - choose 2*cpu_cores (default: unlimited) -->
+    <max_concurrent_queries>4</max_concurrent_queries>
+
+    <!-- lower mark cache size from 5GB to 1GB -->
+    <mark_cache_size>1073741824</mark_cache_size>
+
+    <!-- lower memory requirements at the expense of slower merges - choose 1024 to 4096 (default: 8192) -->
+    <merge_max_block_size>1024</merge_max_block_size>
+
+    <!-- control the maximum total parts size to be merged into one part - choose 1 to 4GB (default: 150GB) -->
+    <max_bytes_to_merge_at_max_space_in_pool>1073741824</max_bytes_to_merge_at_max_space_in_pool>
+
+    <merge_tree>
+        <number_of_free_entries_in_pool_to_lower_max_size_of_merge>0</number_of_free_entries_in_pool_to_lower_max_size_of_merge>
+    </merge_tree>
+
     <timezone>UTC</timezone>
 
     <url_scheme_mappers>
