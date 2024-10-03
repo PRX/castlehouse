@@ -10,6 +10,9 @@
             <!-- limit threads performing background operations - choose 2*cpu_cores (default 16) -->
             <background_pool_size>4</background_pool_size>
         </default>
+        <readonly>
+            <readonly>2</readonly>
+        </readonly>
     </profiles>
 
     <users>
