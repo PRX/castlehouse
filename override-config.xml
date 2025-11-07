@@ -14,14 +14,20 @@
     <!-- lower mark cache size from 5GB to 1GB -->
     <mark_cache_size>1073741824</mark_cache_size>
 
-    <!-- lower memory requirements at the expense of slower merges - choose 1024 to 4096 (default: 8192) -->
-    <merge_max_block_size>1024</merge_max_block_size>
-
-    <!-- control the maximum total parts size to be merged into one part - choose 1 to 4GB (default: 150GB) -->
-    <max_bytes_to_merge_at_max_space_in_pool>1073741824</max_bytes_to_merge_at_max_space_in_pool>
+    <!-- limit threads performing background operations - choose 2*cpu_cores (default 16) -->
+    <background_pool_size>4</background_pool_size>
 
     <merge_tree>
-        <number_of_free_entries_in_pool_to_lower_max_size_of_merge>0</number_of_free_entries_in_pool_to_lower_max_size_of_merge>
+        <!-- lower memory requirements at the expense of slower merges - choose 1024 to 4096 (default: 8192) -->
+        <merge_max_block_size>1024</merge_max_block_size>
+
+        <!-- control the maximum total parts size to be merged into one part - choose 1 to 4GB (default: 150GB) -->
+        <max_bytes_to_merge_at_max_space_in_pool>1073741824</max_bytes_to_merge_at_max_space_in_pool>
+
+        <!-- must match background_pool_size (or be lower) -->
+        <number_of_free_entries_in_pool_to_lower_max_size_of_merge>4</number_of_free_entries_in_pool_to_lower_max_size_of_merge>
+        <number_of_free_entries_in_pool_to_execute_mutation>4</number_of_free_entries_in_pool_to_execute_mutation>
+        <number_of_free_entries_in_pool_to_execute_optimize_entire_partition>4</number_of_free_entries_in_pool_to_execute_optimize_entire_partition>
     </merge_tree>
 
     <timezone>UTC</timezone>
