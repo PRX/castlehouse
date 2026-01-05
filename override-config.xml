@@ -60,6 +60,13 @@
     <session_log remove="1"/>
     <zookeeper_log remove="1"/>
 
+    <aggregated_zookeeper_log>
+        <database>system</database>
+        <table>aggregated_zookeeper_log</table>
+        <flush_interval_milliseconds>7500</flush_interval_milliseconds>
+        <ttl>event_date + INTERVAL 3 DAY</ttl>
+    </aggregated_zookeeper_log>
+
     <!-- these can grow very large, especially during OOM storms -->
     <error_log>
         <database>system</database>
