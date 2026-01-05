@@ -57,6 +57,30 @@
     <trace_log remove="1"/>
     <processors_profile_log remove="1"/>
     <opentelemetry_span_log remove="1"/>
+    <session_log remove="1"/>
+    <zookeeper_log remove="1"/>
+
+    <!-- these can grow very large, especially during OOM storms -->
+    <error_log>
+        <database>system</database>
+        <table>error_log</table>
+        <flush_interval_milliseconds>7500</flush_interval_milliseconds>
+        <ttl>event_date + INTERVAL 3 DAY</ttl>
+    </error_log>
+
+    <query_views_log>
+        <database>system</database>
+        <table>query_views_log</table>
+        <flush_interval_milliseconds>7500</flush_interval_milliseconds>
+        <ttl>event_date + INTERVAL 3 DAY</ttl>
+    </query_views_log>
+
+    <query_metric_log>
+        <database>system</database>
+        <table>query_metric_log</table>
+        <flush_interval_milliseconds>7500</flush_interval_milliseconds>
+        <ttl>event_date + INTERVAL 3 DAY</ttl>
+    </query_metric_log>
 
     <query_log>
         <database>system</database>
